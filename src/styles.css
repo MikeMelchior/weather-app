@@ -27,7 +27,8 @@ body {
 }
 
 .form-div {
-    width: fit-content;
+    width: 400px;
+    height: 40px;
     display: flex;
     position: relative;
     margin: auto;
@@ -36,6 +37,7 @@ body {
 
 form {
     height: fit-content;
+    display: flex;
 }
 
 .form-div input {
@@ -44,13 +46,12 @@ form {
     height: 40px;
     width: 400px;
     font-size: 20px;
-    padding: 0 0 0 5px;
+    padding: 0 0 0 15px;
 }
 
-button {
+form button {
     position: absolute;
     right: 0;
-    top: 1px;
     border-radius: 6px;
     border: 1px solid blue;
     background-color: #c8ffe6;
@@ -59,6 +60,7 @@ button {
     width: 100px;
     padding: 0;
     font-size: 18px;
+    z-index: 1;
 }
 
 input:active,
@@ -70,6 +72,8 @@ ul {
     width: fit-content;
     margin: auto;
     padding: 0;
+    position: absolute;
+    top: 40px;
 }
 
 li {
@@ -80,6 +84,7 @@ li {
     font-size: 18px;
     display: grid;
     grid: auto / 3fr 2fr;
+    position: relative;
 }
 
 li.search-item:hover {
@@ -94,4 +99,15 @@ li.search-item:hover {
     margin: 0;
     opacity: 0;
     visibility: hidden;
+}
+
+span.hidden {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    visibility: visible;
 }
