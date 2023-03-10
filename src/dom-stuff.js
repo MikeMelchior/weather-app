@@ -75,7 +75,7 @@ const createListItem = (name, state, hiddenInfo) => {
         let coords = hiddenInfo.split(', ');
         let lat = coords[0]
         let lon = coords[1]
-        populatePage(lat, lon)
+        populateWeatherCard(getWeather(lat, lon));
         emptyDropdownMenu();
     })
     return element
@@ -86,9 +86,13 @@ const createWeatherCard = () => {
 
     let mainInfo = createClassedElement('div', 'main-info');
         let dateTime = createClassedElement('p', 'date-time');
+            dateTime.textContent = 'DATETIME'
         let cityName = createClassedElement('p', 'city-name');
+            cityName.textContent = 'CITYNAME'
         let mainTemp = createClassedElement('p', 'main-temp');
+            mainTemp.textContent = '20°C'
         let feelsLike = createClassedElement('p', 'feels-like');
+            feelsLike.textContent = 'FEELS LIKE 22°C'
 
     mainInfo.append(dateTime, cityName, mainTemp, feelsLike);
 
@@ -96,30 +100,30 @@ const createWeatherCard = () => {
         let sunriseContainer = createClassedElement('div', 'sunrise-container');
             let sunrise = createClassedElement('p');
                 sunrise.textContent = 'Sunrise'
-            let riseTime = createClassedElement('p');
+            let riseTime = createClassedElement('p', 'sunrise-time');
             sunriseContainer.append(sunrise, riseTime);
 
         let sunsetContainer = createClassedElement('div', 'sunset-container');
             let sunset = createClassedElement('p');
                 sunset.textContent = 'Sunset'
-            let sunsetTime = createClassedElement('p');
+            let sunsetTime = createClassedElement('p', 'sunset-time');
             sunsetContainer.append(sunset, sunsetTime);
 
         let descriptionContainer = createClassedElement('div', 'description-container');
-            let description = createClassedElement('p');
-            let descriptionImg = createClassedElement('div');
+            let description = createClassedElement('p', 'description');
+            let descriptionImg = createClassedElement('div', 'description-img');
             descriptionContainer.append(description, descriptionImg);
 
         let humidityContainer = createClassedElement('div', 'humidity-container');
             let humidity = createClassedElement('p');
                 humidity.textContent = 'Humidity'
-            let humidityValue = createClassedElement('p');
+            let humidityValue = createClassedElement('p', 'humidity-value');
             humidityContainer.append(humidity, humidityValue);
 
         let windContainer = createClassedElement('div', 'wind-container');
             let wind = createClassedElement('p');
                 wind.textContent = 'Wind'
-            let windValue = createClassedElement('p');
+            let windValue = createClassedElement('p', 'wind-value');
             windContainer.append(wind, windValue);
 
     additionalInfo.append(sunriseContainer, sunsetContainer, descriptionContainer, humidityContainer, windContainer)
@@ -146,10 +150,49 @@ async function populateSearchDropdown() {
         })
 }
 
-async function populatePage (lat, lon) {
+async function getWeather (lat, lon) {
     let weather = await index.getWeatherByCoords(lat, lon)
-    console.log(weather);
+    return weather
 }
+
+const twelveHour = (time) => {
+    let timeArr = time.split(':')
+    let hour = timeArr[0];
+    hour = parseFloat(hour);
+
+    if ( hour > 12) {
+        hour -= 12;
+        timeArr[0] = hour;
+        return timeArr.join(':');
+    }
+
+
+    return timeArr.join(':');
+}
+
+async function populateWeatherCard (weather) {
+    let weatherData = await weather;
+
+    let day = new Date().toString().split(' ').slice(0, 4).join(' ');
+    let time = new Date().toString().split(' ').slice(4, 5).join('');
+    time = twelveHour(time);
+    console.log(time)
+    
+    // document.querySelector('.date-time').textContent = 
+
+
+    document.querySelector('.city-name').textContent = weatherData.name;
+
+
+
+    console.log(weatherData);
+}
+
+
+
+
+
+// EVENT LISTENERS ------------------------------------------------------------
 
 searchButton.addEventListener('click', (e) => {
     e.preventDefault();
