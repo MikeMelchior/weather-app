@@ -24,7 +24,7 @@ async function getCities(city) {
         city = 'toronto'
     }
     try {
-        let response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=3&appid=e94982487f044be7ccc7b3ba2a88955d`, 
+        let response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=6&appid=e94982487f044be7ccc7b3ba2a88955d`, 
         {mode: 'cors'});
         let data = await response.json();
         return data;
@@ -54,5 +54,39 @@ const getIcon = (code) => {
     return element;
 }
 
+const twelveHour = (time) => {
+    let timeArr;
+    if (!time) {
+        let newTime = new Date().toString().split(' ').slice(4, 5).join('');
+        timeArr = newTime.split(':').slice(0, 2);
+    } else {
+        let newTime = new Date(time*1000).toString().split(' ').slice(4, 5).join('');
+        timeArr = newTime.split(':').slice(0, 2)
+    }
+    
+    let hour = timeArr[0];
+    let ampm = 'AM';
 
-export {getCities, getWeatherByCoords, getIcon}
+    hour = parseFloat(hour);
+    if ( hour > 12) {
+        ampm = 'PM'
+        hour -= 12;
+        timeArr[0] = hour;
+        return timeArr.join(':').concat(` ${ampm}`);
+    }
+    timeArr[0] = hour;
+    return timeArr.join(':').concat(` ${ampm}`);
+}
+
+const capitalizeWords = (words) => {
+    let wordArr = words.split(' ')
+    let result = [];
+    wordArr.forEach(word => {
+        let letters = word.split('');
+        letters[0] = letters[0].toUpperCase();
+        result.push(letters.join(''));
+    })
+    return result.join(' ')
+}
+
+export {getCities, getWeatherByCoords, twelveHour, getIcon, capitalizeWords}

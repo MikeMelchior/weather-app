@@ -3,6 +3,7 @@ import * as index from './index'
     // function to create element and add classes in  one line
 const createClassedElement = (type, classes) => {
     let element = document.createElement(type);
+    if (!classes) return element;
     element.className = classes;
     return element;
 }
@@ -26,14 +27,6 @@ let searchButton = document.createElement('button');
 formDiv.appendChild(form)
 form.append(searchBar, searchButton);
 main.append(formDiv);
-
-
-
-
-
-
-
-
 
 
 
@@ -64,25 +57,19 @@ const createListItem = (name, state, hiddenInfo) => {
     element.append(cityName, stateName, hidden)
 
         // before returning element, add event listener to 
-        // fill page with data if clicked and empty dropdown
-    element.addEventListener('click', (e) => {
-        //
-        //
-        // check if item is only item in dropdown, if only item them search weather based by 
-        // name so that api doesn't confuse coordinates with a different city?
-        //
-        //
+        // fill page with data if clicked
+    element.addEventListener('click', () => {
         let coords = hiddenInfo.split(', ');
         let lat = coords[0]
         let lon = coords[1]
-        populateWeatherCard(getWeather(lat, lon));
-        emptyDropdownMenu();
+        populateWeatherCard(index.getWeatherByCoords(lat, lon));
     })
     return element
 }
 
 const createWeatherCard = () => {
     let element = createClassedElement('div', 'weather-card')
+    element.style.opacity = 0;
 
     let mainInfo = createClassedElement('div', 'main-info');
         let dateTime = createClassedElement('p', 'date-time');
@@ -97,6 +84,7 @@ const createWeatherCard = () => {
     mainInfo.append(dateTime, cityName, mainTemp, feelsLike);
 
     let additionalInfo = createClassedElement('div', 'additional-info');
+
         let sunriseContainer = createClassedElement('div', 'sunrise-container');
             let sunrise = createClassedElement('p');
                 sunrise.textContent = 'Sunrise'
@@ -136,75 +124,97 @@ createWeatherCard();
 
 
 async function populateSearchDropdown() {
-    let dropdown = document.querySelector('.search-dropdown');
-    let results = await index.getCities(searchBar.value)
-        .then(results => {
-            results.forEach(city => {
-                let name = city.name;
-                let state = city.state;
-                let lat = city.lat;
-                let lon = city.lon;
-                let item = createListItem(name, state, `${lat}, ${lon}`)
-                document.querySelector('.search-dropdown').appendChild(item)
-            })
+    let results = await index.getCities(searchBar.value);
+        results.forEach(city => {
+            let name = city.name;
+            let state = city.state;
+            let lat = city.lat;
+            let lon = city.lon;
+            let item = createListItem(name, state, `${lat}, ${lon}`)
+            document.querySelector('.search-dropdown').appendChild(item);
         })
-}
 
-async function getWeather (lat, lon) {
-    let weather = await index.getWeatherByCoords(lat, lon)
-    return weather
-}
-
-const twelveHour = (time) => {
-    let timeArr = time.split(':')
-    let hour = timeArr[0];
-    hour = parseFloat(hour);
-
-    if ( hour > 12) {
-        hour -= 12;
-        timeArr[0] = hour;
-        return timeArr.join(':');
-    }
-
-
-    return timeArr.join(':');
 }
 
 async function populateWeatherCard (weather) {
     let weatherData = await weather;
 
-    let day = new Date().toString().split(' ').slice(0, 4).join(' ');
-    let time = new Date().toString().split(' ').slice(4, 5).join('');
-    time = twelveHour(time);
-    console.log(time)
+    let weatherCard = document.querySelector('.weather-card');
+
+        // transition card out of view if one already in view
+    weatherCard.style.opacity = 0;
+
+        // set timeout so info displays after card transitions out of view
+    setTimeout(() => {
+
+            // get date and time to display at top of card
+        let day = new Date().toString().split(' ').slice(0, 4).join(' ');
+        let dateTime = document.querySelector('.date-time');
+
+            // display date and time
+        dateTime.innerHTML = `${day} </br>${index.twelveHour()}`
+
+            // display city name;
+        document.querySelector('div p.city-name').textContent = weatherData.name;
+
+            // display temp;
+        let temp = Math.round(weatherData.main.temp)
+        document.querySelector('.main-temp').textContent = `${temp}°C`;
+
+            // display feels like;
+        let feelsLike = Math.round(weatherData.main.feels_like)
+        document.querySelector('.feels-like').textContent = `Feels like ${feelsLike}°C`;
+
+            // display sunrise time
+        let sunriseTime = index.twelveHour(weatherData.sys.sunrise);
+        document.querySelector('.sunrise-time').textContent = `${sunriseTime}`;
+
+            // display sunset time
+        let sunsetTime = index.twelveHour(weatherData.sys.sunset);
+        document.querySelector('.sunset-time').textContent = `${sunsetTime}`
+
+            // display description
+        let description = weatherData.weather[0].description;
+        document.querySelector('.description').textContent = index.capitalizeWords(description);
+
+            // if existing img, remove img
+        try {
+            document.querySelector('.description-img img').remove();
+        } catch (e) {
+            console.log(e)
+        }
+            // display corresponding description image;
+        let icon = index.getIcon(weatherData.weather[0].icon);
+        document.querySelector('.description-img').appendChild(icon);
+
+            // display humidity value
+        let humidity = weatherData.main.humidity;
+        document.querySelector('.humidity-value').textContent = `${humidity}%`;
+
+            // display wind speed value
+        let windSpeed = Math.round(weatherData.wind.speed * 3.6);
+        document.querySelector('.wind-value').textContent = `${windSpeed} km/h`
+
+    weatherCard.style.opacity = 1;
+    }, 1000);
     
-    // document.querySelector('.date-time').textContent = 
-
-
-    document.querySelector('.city-name').textContent = weatherData.name;
-
-
-
-    console.log(weatherData);
 }
-
-
-
 
 
 // EVENT LISTENERS ------------------------------------------------------------
 
 searchButton.addEventListener('click', (e) => {
     e.preventDefault();
+        // create dropdown if doesnt exist, empty if does
     emptyDropdownMenu();
     populateSearchDropdown();
+        // empty search bar
     searchBar.value = '';
 })
 
+    // allow click off of search menu to hide menu
 main.addEventListener('click', (e) => {
-    if (e.target == main) {
-        emptyDropdownMenu();
-    }
+    emptyDropdownMenu();
 })
 
 
