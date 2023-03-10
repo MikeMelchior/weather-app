@@ -17,6 +17,8 @@ import './styles.css';
 
 
 
+
+
 async function getCities(city) {
     if (!city) {
         city = 'toronto'
@@ -46,4 +48,11 @@ async function getWeatherByCoords(lat, lon) {
 }
 
 
-export {getCities, getWeatherByCoords}
+const getIcon = (code) => {
+    let element = new Image();
+    element.src = `https://openweathermap.org/img/wn/${code}@2x.png`;
+    return element;
+}
+
+
+export {getCities, getWeatherByCoords, getIcon}
