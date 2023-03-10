@@ -15,16 +15,12 @@ import './styles.css';
 //https://api.openweathermap.org/data/2.5/weather?lat=43.89&lon=-78.86&appid=e94982487f044be7ccc7b3ba2a88955d
 //
 
-
-
-
-
 async function getCities(city) {
     if (!city) {
         city = 'toronto'
     }
     try {
-        let response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=6&appid=e94982487f044be7ccc7b3ba2a88955d`, 
+        let response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=6&appid=e94982487f044be7ccc7b3ba2a88955d`, 
         {mode: 'cors'});
         let data = await response.json();
         return data;
@@ -33,9 +29,7 @@ async function getCities(city) {
     }  
 }
 
-
 async function getWeatherByCoords(lat, lon) {
-
     let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}1&units=metric&appid=e94982487f044be7ccc7b3ba2a88955d`, 
         {mode: 'cors'})
     let data = await response.json();
@@ -46,7 +40,6 @@ async function getWeatherByCoords(lat, lon) {
         throw new Error('No such data');
     }
 }
-
 
 const getIcon = (code) => {
     let element = new Image();
