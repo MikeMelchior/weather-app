@@ -4,11 +4,11 @@ import './styles.css';
 // Your API key is e94982487f044be7ccc7b3ba2a88955d;
 //
     // Example of API call for weather from city name :
-// http://api.openweathermap.org/data/2.5/weather?q=London&APPID=e94982487f044be7ccc7b3ba2a88955d
+// https://api.openweathermap.org/data/2.5/weather?q=London&APPID=e94982487f044be7ccc7b3ba2a88955d
 //
 
     // Example of API call to get city coords :
-//http://api.openweathermap.org/geo/1.0/direct?q=Oshawa&limit=5&appid=e94982487f044be7ccc7b3ba2a88955d
+//https://api.openweathermap.org/geo/1.0/direct?q=Oshawa&limit=5&appid=e94982487f044be7ccc7b3ba2a88955d
 //
 
     // Example of API call for weather from coords (lat/lon) :
